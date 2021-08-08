@@ -1,0 +1,83 @@
+environment:
+  matrix:
+    - PYTHON: "C:\\Python38-x64"
+      PYTHON_VERSION: "3.8"
+      PYTHON_ARCH: "64"
+
+install:
+#################################  - ps: cat ".\TheKnight\the-knight-thumbnail.txt"
+  - ps: $ENV:PATH="C:\Python38-x64;C:\Python38-x64\Scripts;$ENV:PATH;"
+  - ps: C:\Python38-x64\python.exe -m pip install --upgrade pip
+  - ps: python --version
+  - ps: pip --version
+  - cinst pandoc
+  - REM cinst lame
+  - SET WANTTHES=1
+  - SET WANTPREM=1
+################################  - copy LameExe/lame_v3.100.exe
+  - rename lame_v3.100.exe lame.exe
+  - cinst sox.portable
+  - pip install -U pyenchant #for spelling
+  - python -m pip install gTTS
+  - IF "%WANTTHES%" == "1" echo pip install -U nltk > runme.bat #for theasurus
+  - IF "%WANTTHES%" == "1" echo python -m nltk.downloader all >>runme.bat #for theasurus *** VERY SLOW ***
+  - IF "%WANTTHES%" == "1" call runme.bat > nltk_downloader.log 2>&1 #for theasurus *** VERY SLOW ***
+################################  - IF "%WANTPREM%" == "1" dotnet build PremiumAudioBookSdk\TomThumbPremiumAudioBook\TomThumbPremiumAudioBook.sln -c Release #limited plan, bit slow
+    
+build: false
+
+test_script:
+  - ps: .\topdf.ps1
+
+artifacts:
+  - path: Chapter-*-Spelling.txt    
+    name: spelling-errors
+    type: file
+  - path: Chapter-*-Words.txt
+    name: word-matix
+    type: file
+###############################  - path: The-Return-of-Tom-Thumb*.epub
+###############################    name: is_book_yeah
+###############################    type: file
+###############################  - path: The-Return-of-Tom-Thumb*.md
+###############################    name: is_book_yeah_md
+###############################    type: file
+###############################  - path: The-Return-of-Tom-Thumb*.txt
+###############################    name: is_book_yeah_txt
+###############################    type: file
+###############################  - path: The-Return-of-Tom-Thumb*.html
+###############################    name: is_book_yeah_html
+###############################    type: file
+###############################  - path: The-Return-of-Tom-Thumb*.mp3 
+###############################    name: is_book_yeah_mp3
+###############################    type: file
+###############################  - path: The-Return-of-Tom-Thumb*.mp3.log
+###############################    name: is_book_yeah_mp3_log
+###############################    type: file
+###############################  - path: The-Return-of-Tom-Thumb-with-music*.mp3
+###############################    name: is_book_yeah_mp3_w_music
+###############################    type: file
+###############################  - path: A_Croconossorus_Tale.mp3
+###############################    name: is_croconossorus_real
+###############################    type: file
+###############################  - path: testymctestface.mp3
+###############################    name: testy_mc_testface
+###############################    type: file
+
+on_success:
+###############################  - git clone https://github.com/PunkUnicorn/The-Return-Of-Tom-Thumb-Redirect-Static-Page.git
+###############################  - cd ./The-Return-Of-Tom-Thumb-Redirect-Static-Page
+###############################  - git config --global credential.helper store
+###############################  - ps: Add-Content "$($env:USERPROFILE)\.git-credentials" "https://$($env:pushback):x-oauth-basic@github.com`n"
+###############################  - REM ./getindex.cmd
+###############################  - cmd: copy ..\The-Return-of-Tom-Thumb.html .\public\index.html
+###############################  - cmd: copy ..\The-Return-of-Tom-Thumb.epub .\public\
+###############################  - ps: Write-Output "$($env:USERPROFILE)\.git-credentials"
+###############################  - cmd: git config --global user.email "x-oauth-basic@github.com"
+###############################  - cmd: git config --global user.name "Script"
+###############################  - git add ./public/index.html
+###############################  - git add ./public/The-Return-of-Tom-Thumb.epub
+###############################  - cmd: echo Auto update %APPVEYOR_BUILD_NUMBER%
+###############################  - cmd: git diff-index --quiet HEAD || git commit -m "Auto update %APPVEYOR_BUILD_NUMBER%"
+###############################  - cmd: IF "%APPVEYOR_ACCOUNT_NAME%" == "PunkUnicorn" git push
+###############################  - cmd: IF NOT "%APPVEYOR_ACCOUNT_NAME%" == "PunkUnicorn" echo WHOS AWESOME?? YOUR AWESOEME!!!
